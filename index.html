@@ -23,8 +23,7 @@
     body {
       background: #0d0d0d;
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      height: 500vh;
-      overflow-x: hidden;
+      overflow: hidden;
     }
 
     /* ── Fixed stage ── */
@@ -261,15 +260,15 @@
   <div class="scroll-track"></div>
 
   <script>
-    // ── Color palette (mono-goto inspired) ──
+    // ── Color palette ──
     const palette = [
-      '#ffffff',  // 0 %  — white
-      '#c9a227',  // 20%  — gold
-      '#00baff',  // 40%  — blue
-      '#00cc8d',  // 60%  — teal
-      '#ff6f61',  // 80%  — coral
-      '#c9a227',  // 95%  — gold again
-      '#ffffff',  // 100% — back to white
+      '#ffffff',
+      '#c9a227',
+      '#00baff',
+      '#00cc8d',
+      '#ff6f61',
+      '#c9a227',
+      '#ffffff',
     ];
 
     function hexToRgb(hex) {
@@ -281,31 +280,73 @@
       return Math.round(a + (b - a) * t);
     }
 
-    function blendColor(t) {                       // t: 0 – 1
-      const seg   = t * (palette.length - 1);
-      const idx   = Math.min(Math.floor(seg), palette.length - 2);
-      const frac  = seg - idx;
+    function blendColor(t) {
+      const seg = t * (palette.length - 1);
+      const idx = Math.min(Math.floor(seg), palette.length - 2);
+      const frac = seg - idx;
       const [ar, ag, ab] = hexToRgb(palette[idx]);
       const [br, bg, bb] = hexToRgb(palette[idx + 1]);
       return `rgb(${lerp(ar,br,frac)},${lerp(ag,bg,frac)},${lerp(ab,bb,frac)})`;
     }
 
-    const root = document.documentElement;
-    let pending = false;
+    const root    = document.documentElement;
+    const TRAVEL  = 600;   // px of drag for one full palette cycle
+    let dragging  = false;
+    let startX    = 0;
+    let startY    = 0;
+    let baseT     = 0;     // palette position at drag start (0–1)
+    let currentT  = 0;
+    let pending   = false;
 
-    function onScroll() {
+    function applyColor(t) {
+      currentT = Math.max(0, Math.min(1, t));
       if (pending) return;
       pending = true;
       requestAnimationFrame(() => {
-        const max = document.body.scrollHeight - window.innerHeight;
-        const t   = max > 0 ? window.scrollY / max : 0;
-        root.style.setProperty('--color', blendColor(t));
-        root.style.setProperty('--dur',   t > 0 ? '0.15s' : '1s');
+        root.style.setProperty('--color', blendColor(currentT));
+        root.style.setProperty('--dur', '0.08s');
         pending = false;
       });
     }
 
-    window.addEventListener('scroll', onScroll, { passive: true });
+    // ── Mouse ──
+    document.addEventListener('mousedown', e => {
+      dragging = true;
+      startX   = e.clientX;
+      startY   = e.clientY;
+      baseT    = currentT;
+      document.body.style.cursor = 'grabbing';
+    });
+
+    document.addEventListener('mousemove', e => {
+      if (!dragging) return;
+      // horizontal drag is primary; vertical drag also contributes
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      const delta = (dx - dy) / TRAVEL;   // drag right/up → advance palette
+      applyColor(baseT + delta);
+    });
+
+    document.addEventListener('mouseup', () => {
+      dragging = false;
+      document.body.style.cursor = '';
+    });
+
+    // ── Touch ──
+    document.addEventListener('touchstart', e => {
+      const t = e.touches[0];
+      startX = t.clientX;
+      startY = t.clientY;
+      baseT  = currentT;
+    }, { passive: true });
+
+    document.addEventListener('touchmove', e => {
+      const t  = e.touches[0];
+      const dx = t.clientX - startX;
+      const dy = t.clientY - startY;
+      const delta = (dx - dy) / TRAVEL;
+      applyColor(baseT + delta);
+    }, { passive: true });
   </script>
 
 </body>
