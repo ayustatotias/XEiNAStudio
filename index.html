@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tatsuya Saito</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --color: #ffffff;
+      --dur: 1s;
+    }
+
+    html {
+      background: #0d0d0d;
+    }
+
+    body {
+      background: #0d0d0d;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      height: 500vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Fixed stage ── */
+    .stage {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    /* ── Name ── */
+    .name {
+      font-size: clamp(2.8rem, 9vw, 7.5rem);
+      font-weight: 200;
+      letter-spacing: 0.18em;
+      color: var(--color);
+      transition: color var(--dur) linear;
+      text-align: center;
+      line-height: 1;
+      user-select: none;
+    }
+
+    /* ── Subtitle ── */
+    .subtitle {
+      margin-top: 1.2rem;
+      font-size: clamp(0.6rem, 1.4vw, 0.85rem);
+      font-weight: 300;
+      letter-spacing: 0.55em;
+      text-transform: uppercase;
+      color: var(--color);
+      opacity: 0.45;
+      transition: color var(--dur) linear;
+      text-align: center;
+    }
+
+    /* ── Studio tag ── */
+    .studio {
+      margin-top: 0.9rem;
+      font-size: clamp(0.55rem, 1.1vw, 0.72rem);
+      font-weight: 300;
+      letter-spacing: 0.35em;
+      color: var(--color);
+      opacity: 0.28;
+      transition: color var(--dur) linear;
+      text-align: center;
+    }
+
+    /* ── Thin horizontal rule ── */
+    .rule {
+      margin-top: 3rem;
+      width: clamp(40px, 6vw, 80px);
+      height: 1px;
+      background: var(--color);
+      opacity: 0.25;
+      transition: background var(--dur) linear;
+    }
+
+    /* ── Footer (email + icons) ── */
+    .footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-bottom: 2.4rem;
+      gap: 1.4rem;
+      pointer-events: all;
+    }
+
+    .email {
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--color);
+      opacity: 0.38;
+      text-decoration: none;
+      transition: color var(--dur) linear, opacity 0.25s;
+    }
+    .email:hover { opacity: 0.9; }
+
+    /* ── Icon row ── */
+    .icons {
+      display: flex;
+      align-items: center;
+      gap: 2.2rem;
+    }
+
+    .icon-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color);
+      opacity: 0.5;
+      text-decoration: none;
+      transition: color var(--dur) linear, opacity 0.25s, transform 0.25s;
+    }
+    .icon-link:hover {
+      opacity: 1;
+      transform: translateY(-4px);
+    }
+    .icon-link svg {
+      width: 22px;
+      height: 22px;
+      fill: currentColor;
+    }
+
+    /* ── Label beneath each icon ── */
+    .icon-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.45rem;
+      text-decoration: none;
+      color: var(--color);
+      opacity: 0.5;
+      transition: color var(--dur) linear, opacity 0.25s, transform 0.25s;
+    }
+    .icon-wrap:hover {
+      opacity: 1;
+      transform: translateY(-4px);
+    }
+    .icon-wrap svg {
+      width: 22px;
+      height: 22px;
+      fill: currentColor;
+    }
+    .icon-label {
+      font-size: 0.48rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: inherit;
+      opacity: 0.7;
+    }
+
+    /* ── Right edge scroll indicator ── */
+    .scroll-track {
+      position: fixed;
+      right: 2rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1px;
+      height: 70px;
+      background: var(--color);
+      opacity: 0.15;
+      transition: background var(--dur) linear;
+    }
+
+    /* ── Fade-in on load ── */
+    .stage, .footer {
+      animation: fadeUp 1.4s cubic-bezier(0.16,1,0.3,1) both;
+    }
+    .footer { animation-delay: 0.2s; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fixed center -->
+  <div class="stage">
+    <h1 class="name">TATSUYA SAITO</h1>
+    <p class="subtitle">Guitarist &nbsp;&middot;&nbsp; Music Producer</p>
+    <p class="studio">CRAFTED AT XEiNA STUDIO</p>
+    <div class="rule"></div>
+  </div>
+
+  <!-- Footer: email + icons -->
+  <footer class="footer">
+    <a href="mailto:XEiNAstudio@gmail.com" class="email">XEiNAstudio@gmail.com</a>
+
+    <div class="icons">
+
+      <!-- Bandcamp -->
+      <a class="icon-wrap"
+         href="https://tatsuyasaito.bandcamp.com/"
+         target="_blank" rel="noopener noreferrer"
+         title="Bandcamp">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 18.75l7.437-13.5H24l-7.438 13.5z"/>
+        </svg>
+        <span class="icon-label">Bandcamp</span>
+      </a>
+
+      <!-- YouTube -->
+      <a class="icon-wrap"
+         href="https://www.youtube.com/@Ayustatotias"
+         target="_blank" rel="noopener noreferrer"
+         title="YouTube">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+        </svg>
+        <span class="icon-label">YouTube</span>
+      </a>
+
+      <!-- Audiostock — waveform icon -->
+      <a class="icon-wrap"
+         href="https://audiostock.jp/artists/45768"
+         target="_blank" rel="noopener noreferrer"
+         title="Audiostock">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <!-- Waveform bars -->
+          <rect x="1"  y="9"  width="2.2" height="6"  rx="1.1"/>
+          <rect x="4.9" y="5"  width="2.2" height="14" rx="1.1"/>
+          <rect x="8.8" y="2"  width="2.2" height="20" rx="1.1"/>
+          <rect x="12.7" y="6" width="2.2" height="12" rx="1.1"/>
+          <rect x="16.6" y="4" width="2.2" height="16" rx="1.1"/>
+          <rect x="20.5" y="8" width="2.2" height="8"  rx="1.1"/>
+        </svg>
+        <span class="icon-label">Audiostock</span>
+      </a>
+
+    </div>
+  </footer>
+
+  <!-- Scroll indicator -->
+  <div class="scroll-track"></div>
+
+  <script>
+    // ── Color palette (mono-goto inspired) ──
+    const palette = [
+      '#ffffff',  // 0 %  — white
+      '#c9a227',  // 20%  — gold
+      '#00baff',  // 40%  — blue
+      '#00cc8d',  // 60%  — teal
+      '#ff6f61',  // 80%  — coral
+      '#c9a227',  // 95%  — gold again
+      '#ffffff',  // 100% — back to white
+    ];
+
+    function hexToRgb(hex) {
+      const n = parseInt(hex.slice(1), 16);
+      return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+    }
+
+    function lerp(a, b, t) {
+      return Math.round(a + (b - a) * t);
+    }
+
+    function blendColor(t) {                       // t: 0 – 1
+      const seg   = t * (palette.length - 1);
+      const idx   = Math.min(Math.floor(seg), palette.length - 2);
+      const frac  = seg - idx;
+      const [ar, ag, ab] = hexToRgb(palette[idx]);
+      const [br, bg, bb] = hexToRgb(palette[idx + 1]);
+      return `rgb(${lerp(ar,br,frac)},${lerp(ag,bg,frac)},${lerp(ab,bb,frac)})`;
+    }
+
+    const root = document.documentElement;
+    let pending = false;
+
+    function onScroll() {
+      if (pending) return;
+      pending = true;
+      requestAnimationFrame(() => {
+        const max = document.body.scrollHeight - window.innerHeight;
+        const t   = max > 0 ? window.scrollY / max : 0;
+        root.style.setProperty('--color', blendColor(t));
+        root.style.setProperty('--dur',   t > 0 ? '0.15s' : '1s');
+        pending = false;
+      });
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+  </script>
+
+</body>
+</html>
