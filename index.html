@@ -74,16 +74,6 @@
       text-align: center;
     }
 
-    /* ── Thin horizontal rule ── */
-    .rule {
-      margin-top: 3rem;
-      width: clamp(40px, 6vw, 80px);
-      height: 1px;
-      background: var(--color);
-      opacity: 0.25;
-      transition: background var(--dur) linear;
-    }
-
     /* ── Footer (email + icons) ── */
     .footer {
       position: fixed;
@@ -163,19 +153,6 @@
       opacity: 0.7;
     }
 
-    /* ── Right edge scroll indicator ── */
-    .scroll-track {
-      position: fixed;
-      right: 2rem;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 1px;
-      height: 70px;
-      background: var(--color);
-      opacity: 0.15;
-      transition: background var(--dur) linear;
-    }
-
     /* ── Fade-in on load ── */
     .stage, .footer {
       animation: fadeUp 1.4s cubic-bezier(0.16,1,0.3,1) both;
@@ -195,7 +172,6 @@
     <h1 class="name">TATSUYA SAITO</h1>
     <p class="subtitle">Guitarist &nbsp;&middot;&nbsp; Music Producer</p>
     <p class="studio">CRAFTED AT XEiNA STUDIO</p>
-    <div class="rule"></div>
   </div>
 
   <!-- Footer: email + icons -->
@@ -254,9 +230,6 @@
     </div>
     <a href="mailto:XEiNAstudio@gmail.com" class="email">XEiNAstudio@gmail.com</a>
   </footer>
-
-  <!-- Scroll indicator -->
-  <div class="scroll-track"></div>
 
   <script>
     // ── Color palette ──
