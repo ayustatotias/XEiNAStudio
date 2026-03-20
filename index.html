@@ -276,30 +276,35 @@
       return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
     }
 
-    function lerp(a, b, t) {
-      return Math.round(a + (b - a) * t);
-    }
+    function lerp(a, b, t) { return Math.round(a + (b - a) * t); }
 
+    // t は整数をまたいでループする実数。frac部分でパレットを参照
     function blendColor(t) {
-      const seg = t * (palette.length - 1);
-      const idx = Math.min(Math.floor(seg), palette.length - 2);
-      const frac = seg - idx;
+      const frac = ((t % 1) + 1) % 1;          // 0..1 に正規化（負値対応）
+      const seg  = frac * (palette.length - 1);
+      const idx  = Math.min(Math.floor(seg), palette.length - 2);
+      const f    = seg - idx;
       const [ar, ag, ab] = hexToRgb(palette[idx]);
       const [br, bg, bb] = hexToRgb(palette[idx + 1]);
-      return `rgb(${lerp(ar,br,frac)},${lerp(ag,bg,frac)},${lerp(ab,bb,frac)})`;
+      return `rgb(${lerp(ar,br,f)},${lerp(ag,bg,f)},${lerp(ab,bb,f)})`;
     }
 
-    const root    = document.documentElement;
-    const TRAVEL  = 600;   // px of drag for one full palette cycle
-    let dragging  = false;
-    let startX    = 0;
-    let startY    = 0;
-    let baseT     = 0;     // palette position at drag start (0–1)
-    let currentT  = 0;
-    let pending   = false;
+    const root      = document.documentElement;
+    const TRAVEL    = 600;    // px でパレット1周
+    const IDLE_MS   = 5000;   // 無操作で白に戻り始める時間
+    const RESET_MS  = 1000;   // 白に戻るアニメーション時間
+
+    let dragging    = false;
+    let startX      = 0, startY = 0;
+    let baseT       = 0;
+    let currentT    = 0;      // ループする実数（クランプなし）
+    let pending     = false;
+
+    let idleTimer   = null;
+    let resetRafId  = null;
 
     function applyColor(t) {
-      currentT = Math.max(0, Math.min(1, t));
+      currentT = t;
       if (pending) return;
       pending = true;
       requestAnimationFrame(() => {
@@ -309,8 +314,42 @@
       });
     }
 
+    // ── 白に戻るアニメーション ──
+    function cancelReset() {
+      clearTimeout(idleTimer);
+      idleTimer = null;
+      if (resetRafId) { cancelAnimationFrame(resetRafId); resetRafId = null; }
+    }
+
+    function startReset() {
+      const from  = currentT;
+      const to    = Math.round(currentT);   // 最寄りの整数（＝白）
+      const start = performance.now();
+
+      function animate(now) {
+        const p     = Math.min((now - start) / RESET_MS, 1);
+        const eased = 1 - Math.pow(1 - p, 3);  // ease-out cubic
+        currentT = from + (to - from) * eased;
+        root.style.setProperty('--color', blendColor(currentT));
+        root.style.setProperty('--dur', '0.05s');
+        if (p < 1) {
+          resetRafId = requestAnimationFrame(animate);
+        } else {
+          currentT  = to;
+          resetRafId = null;
+        }
+      }
+      resetRafId = requestAnimationFrame(animate);
+    }
+
+    function scheduleReset() {
+      cancelReset();
+      idleTimer = setTimeout(startReset, IDLE_MS);
+    }
+
     // ── Mouse ──
     document.addEventListener('mousedown', e => {
+      cancelReset();
       dragging = true;
       startX   = e.clientX;
       startY   = e.clientY;
@@ -320,33 +359,34 @@
 
     document.addEventListener('mousemove', e => {
       if (!dragging) return;
-      // horizontal drag is primary; vertical drag also contributes
-      const dx = e.clientX - startX;
-      const dy = e.clientY - startY;
-      const delta = (dx - dy) / TRAVEL;   // drag right/up → advance palette
-      applyColor(baseT + delta);
+      const dx    = e.clientX - startX;
+      const dy    = e.clientY - startY;
+      applyColor(baseT + (dx - dy) / TRAVEL);
     });
 
     document.addEventListener('mouseup', () => {
       dragging = false;
       document.body.style.cursor = '';
+      scheduleReset();
     });
 
     // ── Touch ──
     document.addEventListener('touchstart', e => {
+      cancelReset();
       const t = e.touches[0];
-      startX = t.clientX;
-      startY = t.clientY;
-      baseT  = currentT;
+      startX  = t.clientX;
+      startY  = t.clientY;
+      baseT   = currentT;
     }, { passive: true });
 
     document.addEventListener('touchmove', e => {
       const t  = e.touches[0];
       const dx = t.clientX - startX;
       const dy = t.clientY - startY;
-      const delta = (dx - dy) / TRAVEL;
-      applyColor(baseT + delta);
+      applyColor(baseT + (dx - dy) / TRAVEL);
     }, { passive: true });
+
+    document.addEventListener('touchend', scheduleReset, { passive: true });
   </script>
 
 </body>
